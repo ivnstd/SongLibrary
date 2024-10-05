@@ -1,0 +1,62 @@
+package main
+
+import (
+	"os"
+
+	db_server "github.com/ivnstd/SongLibrary"
+	"github.com/ivnstd/SongLibrary/pkg/handler"
+	"github.com/ivnstd/SongLibrary/pkg/repository"
+	"github.com/ivnstd/SongLibrary/pkg/service"
+	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+)
+
+func main() {
+	// logrus.SetFormatter(new(logrus.JSONFormatter))
+
+	if err := initConfig(); err != nil {
+		logrus.Fatalf("Error initializing configs: %s", err.Error())
+	}
+
+	if err := godotenv.Load(); err != nil {
+		logrus.Fatalf("Error loading env variables: %s", err.Error())
+	}
+
+	db, err := repository.NewDB(repository.Config{
+		Host:     viper.GetString("db.host"),
+		Port:     viper.GetString("db.port"),
+		Username: viper.GetString("db.user"),
+		DBName:   viper.GetString("db.dbname"),
+		SSLMode:  viper.GetString("db.sslmode"),
+		Password: os.Getenv("DB_PASSWORD"),
+	})
+	if err != nil {
+		logrus.Fatalf("Failed to initialize db: %s", err.Error())
+	}
+
+	repos := repository.NewRepository(db)
+	services := service.NewService(repos)
+	handlers := handler.NewHandler(services)
+
+	srv := new(db_server.Server)
+	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+		logrus.Fatalf("Error occured while running http server: %s", err.Error())
+	}
+}
+
+func initConfig() error {
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("config")
+	return viper.ReadInConfig()
+}
+
+// go mod init github.com/ivnstd/SongLibrary
+// go mod tidy
+// go get -u github.com/gin-gonic/gin
+// go get -u github.com/spf13/viper
+// go get -u gorm.io/gorm
+// go get -u gorm.io/driver/postgres
+// go get -u github.com/joho/godotenv
+// go get -u github.com/sirupsen/logrus
+// go run cmd/main.go
