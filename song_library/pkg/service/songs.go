@@ -1,7 +1,9 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/ivnstd/SongLibrary/models"
@@ -18,6 +20,27 @@ func NewSongsService(repo repository.Songs) *SongsService {
 
 func (s *SongsService) GetSongs(group, song, releaseDate string, page, limit int) ([]models.Song, error) {
 	return s.repo.GetSongs(group, song, releaseDate, page, limit)
+}
+
+func (s *SongsService) FetchSongDetail(group string, song string) (*models.SongDetail, error) {
+	url := fmt.Sprintf("http://localhost:8081/info?group=%s&song=%s", group, song)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Unexpected status code: %d", resp.StatusCode)
+	}
+
+	var songDetail models.SongDetail
+	if err := json.NewDecoder(resp.Body).Decode(&songDetail); err != nil {
+		return nil, fmt.Errorf("Failed to decode response: %v", err)
+	}
+
+	return &songDetail, nil
 }
 
 func (s *SongsService) CreateSong(song models.Song) error {

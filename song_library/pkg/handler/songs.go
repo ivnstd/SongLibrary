@@ -42,7 +42,7 @@ func (h *Handler) get_songs(c *gin.Context) {
 	newSuccessResponse(c, http.StatusOK, "Songs", songs)
 }
 
-// Метод для создания новой песни
+// Метод для добавления новой песни
 func (h *Handler) post_song(c *gin.Context) {
 	var input models.SongInput
 
@@ -52,13 +52,20 @@ func (h *Handler) post_song(c *gin.Context) {
 		return
 	}
 
-	//TODO: запрос на внешний API/API MOCK, обработка ошибок
+	// Отправка запроса к внешнему API для получения дополнительной информации о песне
+	songDetail, err := h.services.Songs.FetchSongDetail(input.Group, input.Song)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "Failed to fetch song details", err.Error())
+		return
+	}
+
+	// Создание объекта песни с полученными данными
 	song := models.Song{
 		Group:       input.Group,
 		Song:        input.Song,
-		ReleaseDate: "16.07.2006",
-		Text:        "Ooh baby, don't you know I suffer?\\nOoh baby, can you hear me moan?\\nYou caught me under false pretenses\\nHow long before you let me go?\\n\\nOoh\\nYou set my soul alight\\nOoh\\nYou set my soul alight",
-		Link:        "https://www.youtube.com/watch?v=Xsp3_a-PMTw",
+		ReleaseDate: songDetail.ReleaseDate,
+		Text:        songDetail.Text,
+		Link:        songDetail.Link,
 	}
 
 	// Создание в базе записи, проверка на возможность создания

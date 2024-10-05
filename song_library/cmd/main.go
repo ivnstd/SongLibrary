@@ -13,8 +13,6 @@ import (
 )
 
 func main() {
-	// logrus.SetFormatter(new(logrus.JSONFormatter))
-
 	if err := initConfig(); err != nil {
 		logrus.Fatalf("Error initializing configs: %s", err.Error())
 	}
@@ -50,13 +48,3 @@ func initConfig() error {
 	viper.SetConfigName("config")
 	return viper.ReadInConfig()
 }
-
-// go mod init github.com/ivnstd/SongLibrary
-// go mod tidy
-// go get -u github.com/gin-gonic/gin
-// go get -u github.com/spf13/viper
-// go get -u gorm.io/gorm
-// go get -u gorm.io/driver/postgres
-// go get -u github.com/joho/godotenv
-// go get -u github.com/sirupsen/logrus
-// go run cmd/main.go
