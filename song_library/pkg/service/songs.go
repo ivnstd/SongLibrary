@@ -9,6 +9,7 @@ import (
 
 	"github.com/ivnstd/SongLibrary/models"
 	"github.com/ivnstd/SongLibrary/pkg/repository"
+	"github.com/sirupsen/logrus"
 )
 
 type SongsService struct {
@@ -24,18 +25,19 @@ func (s *SongsService) GetSongs(group, song, releaseDate string, page, limit int
 }
 
 func (s *SongsService) FetchSongDetail(group string, song string) (*models.SongDetail, error) {
-	// Экранирование параметры запроса
 	groupEscaped := url.QueryEscape(group)
 	songEscaped := url.QueryEscape(song)
 
 	url := fmt.Sprintf("http://localhost:8081/info?group=%s&song=%s", groupEscaped, songEscaped)
 
+	logrus.Infof("Fetching details for song: %s by group: %s", song, group)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to make request: %v", err)
 	}
 	defer resp.Body.Close()
 
+	logrus.Infof("Received response status: %d", resp.StatusCode)
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Unexpected status code: %d", resp.StatusCode)
 	}

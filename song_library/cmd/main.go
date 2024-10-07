@@ -13,6 +13,9 @@ import (
 )
 
 func main() {
+	// logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetLevel(logrus.DebugLevel)
+
 	if err := initConfig(); err != nil {
 		logrus.Fatalf("Error initializing configs: %s", err.Error())
 	}
@@ -20,6 +23,8 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		logrus.Fatalf("Error loading env variables: %s", err.Error())
 	}
+
+	logrus.Info("Starting server...")
 
 	db, err := repository.NewDB(repository.Config{
 		Host:     viper.GetString("db.host"),
@@ -32,8 +37,8 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("Failed to initialize db: %s", err.Error())
 	}
+	logrus.Info("Database connection established")
 
-	// Наполнение базы данными, если она пуста
 	repository.SeedDatabaseIfEmpty(db)
 
 	repos := repository.NewRepository(db)
@@ -44,6 +49,7 @@ func main() {
 	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
 		logrus.Fatalf("Error occured while running http server: %s", err.Error())
 	}
+	logrus.Info("http server successfully launched")
 }
 
 func initConfig() error {

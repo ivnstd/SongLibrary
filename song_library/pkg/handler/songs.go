@@ -8,11 +8,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ivnstd/SongLibrary/models"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 // Метод для получения данных библиотеки с фильтрацией по всем полям и пагинацией
 func (h *Handler) get_songs(c *gin.Context) {
+	logrus.Infof("Handling get_songs request with params: group=%s, song=%s, release_date=%s, page=%s, limit=%s",
+		c.DefaultQuery("group", ""), c.DefaultQuery("song", ""), c.DefaultQuery("release_date", ""), c.DefaultQuery("page", "1"), c.DefaultQuery("limit", "10"))
+
 	// Извлечение параметров для фильтрации и пагинации
 	group := c.DefaultQuery("group", "")
 	title := c.DefaultQuery("song", "")
@@ -32,6 +36,7 @@ func (h *Handler) get_songs(c *gin.Context) {
 	}
 
 	// Получение данных о песнях из базы
+	logrus.Debug("Fetching songs")
 	songs, err := h.services.Songs.GetSongs(group, title, releaseDate, page, limit)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve songs", err.Error())
@@ -44,6 +49,8 @@ func (h *Handler) get_songs(c *gin.Context) {
 
 // Метод для добавления новой песни
 func (h *Handler) post_song(c *gin.Context) {
+	logrus.Infof("Handling post_song request")
+
 	var input models.SongInput
 
 	// Проверка тела запроса на валидность
@@ -53,6 +60,7 @@ func (h *Handler) post_song(c *gin.Context) {
 	}
 
 	// Отправка запроса к внешнему API для получения дополнительной информации о песне
+	logrus.Debugf("Fetching song details from external API with params: group %s, song: %s", input.Group, input.Song)
 	songDetail, err := h.services.Songs.FetchSongDetail(input.Group, input.Song)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "Failed to fetch song details", err.Error())
@@ -69,6 +77,7 @@ func (h *Handler) post_song(c *gin.Context) {
 	}
 
 	// Создание в базе записи, проверка на возможность создания
+	logrus.Debugf("Creating song: %+v", song)
 	if err := h.services.Songs.CreateSong(song); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "Failed to create song", err.Error())
 		return
@@ -81,6 +90,7 @@ func (h *Handler) post_song(c *gin.Context) {
 // Middleware для извлечения ID и проверки существования персоны
 func (h *Handler) songMiddleware(c *gin.Context) {
 	idParam := c.Param("id")
+	logrus.Debugf("Extracted ID from request: %s", idParam)
 
 	// Проверка id на валидность
 	id, err := strconv.ParseUint(idParam, 10, 32)
@@ -91,6 +101,7 @@ func (h *Handler) songMiddleware(c *gin.Context) {
 	}
 
 	// Проверка существования песни
+	logrus.Debugf("Fetching song with ID: %d", id)
 	song, err := h.services.Songs.GetSong(uint(id))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -103,12 +114,15 @@ func (h *Handler) songMiddleware(c *gin.Context) {
 	}
 
 	// Сохранение данных о песне в контексте
+	logrus.Infof("Successfully retrieved song with ID: %d", id)
 	c.Set("song", song)
 	c.Next()
 }
 
 // Метод для получения данных песни
 func (h *Handler) get_song(c *gin.Context) {
+	logrus.Infof("Handling get_song request")
+
 	// Получение данных о песне из контекста
 	song, exists := c.Get("song")
 	if !exists {
@@ -122,6 +136,8 @@ func (h *Handler) get_song(c *gin.Context) {
 
 // Метод для изменения данных песни
 func (h *Handler) put_song(c *gin.Context) {
+	logrus.Infof("Handling put_song request")
+
 	var updatedSong models.Song
 
 	// Получение данных о песне из контекста
@@ -141,6 +157,7 @@ func (h *Handler) put_song(c *gin.Context) {
 	}
 
 	// Обновление данных в базе, проверка на возможность обновления
+	logrus.Debugf("Updating song with ID: %d, %+v", song.ID, updatedSong)
 	if err := h.services.Songs.UpdateSong(song.ID, updatedSong); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "Failed to update person", err.Error())
 		return
@@ -152,10 +169,13 @@ func (h *Handler) put_song(c *gin.Context) {
 
 // Метод для удаления песни
 func (h *Handler) delete_song(c *gin.Context) {
+	logrus.Infof("Handling delete_song request")
+
 	// Получение данных о песне из контекста
 	song := c.MustGet("song").(models.Song)
 
 	// Удаление из базы записи, проверка на возможность удаления
+	logrus.Debugf("Deleting song with ID: %d", song.ID)
 	if err := h.services.Songs.DeleteSong(song.ID); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "Failed to delete song", err.Error())
 		return
@@ -167,18 +187,22 @@ func (h *Handler) delete_song(c *gin.Context) {
 
 // Метод для получения текста песни с пагинацией по куплетам
 func (h *Handler) get_song_lyrics(c *gin.Context) {
+	logrus.Infof("Handling get_song_lyrics request")
+
 	// Получение данных о песне из контекста
 	song := c.MustGet("song").(models.Song)
 
-	// ПИзвлечение параметра для пагинации
+	// Извлечение параметра для пагинации
 	verseStr := c.DefaultQuery("verse", "1")
 	verseNumber, err := strconv.Atoi(verseStr)
 	if err != nil || verseNumber < 1 {
 		newErrorResponse(c, http.StatusBadRequest, "Invalid verse number")
 		return
 	}
+	logrus.Debugf("Extracted verse number: %d", verseNumber)
 
 	// Получение данных о куплете песни
+	logrus.Debugf("Fetching song's lyrics with ID: %d", song.ID)
 	verse, err := h.services.Songs.GetSongLyrics(song, verseNumber)
 	if err != nil {
 		newErrorResponse(c, http.StatusNotFound, err.Error())

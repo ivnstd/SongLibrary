@@ -30,6 +30,6 @@ func newSuccessResponse(c *gin.Context, statusCode int, dataKey string, dataValu
 	}
 
 	// Возврат ответа
-	logrus.Infof("%v success.\t%v: %v", statusCode, dataKey, dataValue)
+	logrus.Infof("%v success.\t%v: %+v", statusCode, dataKey, dataValue)
 	c.JSON(statusCode, response)
 }

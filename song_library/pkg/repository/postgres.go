@@ -36,7 +36,11 @@ func NewDB(cfg Config) (*gorm.DB, error) {
 func SeedDatabaseIfEmpty(db *gorm.DB) {
 	var count int64
 	db.Model(&models.Song{}).Count(&count)
+
+	logrus.Infof("Current number of songs in the database: %d", count)
+
 	if count == 0 {
+		logrus.Info("Database is empty, seeding with initial data")
 		SeedDatabase(db)
 	}
 }
@@ -91,6 +95,6 @@ func SeedDatabase(db *gorm.DB) {
 	if err := db.Create(&songs).Error; err != nil {
 		logrus.Fatalf("Failed to seed db: %s", err.Error())
 	} else {
-		logrus.Println("Database seeded with initial data")
+		logrus.Info("Database seeded with initial data")
 	}
 }
