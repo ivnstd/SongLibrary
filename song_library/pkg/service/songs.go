@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/ivnstd/SongLibrary/models"
@@ -23,7 +24,11 @@ func (s *SongsService) GetSongs(group, song, releaseDate string, page, limit int
 }
 
 func (s *SongsService) FetchSongDetail(group string, song string) (*models.SongDetail, error) {
-	url := fmt.Sprintf("http://localhost:8081/info?group=%s&song=%s", group, song)
+	// Экранирование параметры запроса
+	groupEscaped := url.QueryEscape(group)
+	songEscaped := url.QueryEscape(song)
+
+	url := fmt.Sprintf("http://localhost:8081/info?group=%s&song=%s", groupEscaped, songEscaped)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -60,7 +65,7 @@ func (s *SongsService) DeleteSong(id uint) error {
 }
 
 func (s *SongsService) GetSongLyrics(song models.Song, verseNumber int) (string, error) {
-	verses := strings.Split(song.Text, "\\n\\n")
+	verses := strings.Split(song.Text, "\n\n")
 
 	if verseNumber < 1 || verseNumber > len(verses) {
 		return "", fmt.Errorf("Verse not found")

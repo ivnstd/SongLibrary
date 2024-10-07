@@ -25,9 +25,9 @@ func main() {
 		}
 
 		response := SongDetail{
-			ReleaseDate: "16.07.2006",
-			Text:        "Ooh baby, don't you know I suffer?\\nOoh baby, can you hear me moan?\\nYou caught me under false pretenses\\nHow long before you let me go?\\n\\nOoh\\nYou set my soul alight\\nOoh\\nYou set my soul alight",
-			Link:        "https://www.youtube.com/watch?v=Xsp3_a-PMTw",
+			ReleaseDate: "01.01.2010",
+			Text:        "Ooh some text?\nOoh lalala?\n...\nSome text?\n\nOoh\nSome text\nOoh\nlalala",
+			Link:        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 		}
 
 		c.JSON(http.StatusOK, response)

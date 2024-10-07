@@ -26,8 +26,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			songsByID.Use(h.songMiddleware)
 
 			songsByID.GET("", h.get_song)               // Получение полной информации о песне
-			songsByID.PUT("/", h.put_song)              // Изменение данных песни
-			songsByID.DELETE("/", h.delete_song)        // Удаление песни
+			songsByID.PUT("", h.put_song)               // Изменение данных песни
+			songsByID.DELETE("", h.delete_song)         // Удаление песни
 			songsByID.GET("/lyrics", h.get_song_lyrics) // Получение текста песни с пагинацией по куплетам
 		}
 	}

@@ -33,6 +33,9 @@ func main() {
 		logrus.Fatalf("Failed to initialize db: %s", err.Error())
 	}
 
+	// Наполнение базы данными, если она пуста
+	repository.SeedDatabaseIfEmpty(db)
+
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
