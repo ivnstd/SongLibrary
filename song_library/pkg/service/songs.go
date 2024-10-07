@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/ivnstd/SongLibrary/configs"
 	"github.com/ivnstd/SongLibrary/models"
 	"github.com/ivnstd/SongLibrary/pkg/repository"
 	"github.com/sirupsen/logrus"
@@ -28,7 +29,7 @@ func (s *SongsService) FetchSongDetail(group string, song string) (*models.SongD
 	groupEscaped := url.QueryEscape(group)
 	songEscaped := url.QueryEscape(song)
 
-	url := fmt.Sprintf("http://localhost:8081/info?group=%s&song=%s", groupEscaped, songEscaped)
+	url := fmt.Sprintf("http://localhost:%s/info?group=%s&song=%s", configs.Config.APIPort, groupEscaped, songEscaped)
 
 	logrus.Infof("Fetching details for song: %s by group: %s", song, group)
 	resp, err := http.Get(url)
