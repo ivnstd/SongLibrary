@@ -7,7 +7,15 @@ import (
 	"github.com/ivnstd/SongLibrary/pkg/repository"
 	"github.com/ivnstd/SongLibrary/pkg/service"
 	"github.com/sirupsen/logrus"
+
+	_ "github.com/ivnstd/SongLibrary/docs"
 )
+
+// @title Song Library API
+// @version 1.0
+// @description Реализация онлайн библиотеки песен.
+// @host localhost:8080
+// @BasePath /
 
 func main() {
 	// logrus.SetLevel(logrus.InfoLevel)
@@ -38,11 +46,11 @@ func main() {
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 
+	router := handlers.InitRoutes()
+
 	srv := new(db_server.Server)
-	if err := srv.Run(configs.Config.MainPort, handlers.InitRoutes()); err != nil {
+	if err := srv.Run(configs.Config.MainPort, router); err != nil {
 		logrus.Fatalf("Error occured while running http server: %s", err.Error())
 	}
 	logrus.Info("http server successfully launched")
 }
-
-//следующий пункт "Вынести конфигурационные данные в .env-файл"

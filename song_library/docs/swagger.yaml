@@ -1,0 +1,167 @@
+basePath: /
+definitions:
+  models.Song:
+    description: Песня в библиотеке
+    properties:
+      group:
+        description: Исполнитель
+        type: string
+      id:
+        description: ID песни
+        type: integer
+      link:
+        description: Ссылка на песню
+        type: string
+      releaseDate:
+        description: Дата релиза
+        type: string
+      song:
+        description: Название песни
+        type: string
+      text:
+        description: Текст песни
+        type: string
+    type: object
+  models.SongInput:
+    description: Данные, необходимые для добавления новой песни
+    properties:
+      group:
+        description: Исполнитель
+        type: string
+      song:
+        description: Название песни
+        type: string
+    required:
+    - group
+    - song
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Реализация онлайн библиотеки песен.
+  title: Song Library API
+  version: "1.0"
+paths:
+  /songs:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список песен с возможностью фильтрации по группе, названию
+        песни и дате релиза, поддерживает пагинацию.
+      operationId: get-songs
+      parameters:
+      - description: Фильтрация по группе или исполнителю
+        in: query
+        name: group
+        type: string
+      - description: Фильтрация по названию песни
+        in: query
+        name: song
+        type: string
+      - description: Фильтрация по дате релиза
+        in: query
+        name: release_date
+        type: string
+      - default: 1
+        description: Номер страницы для пагинации
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Количество элементов на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get list of songs
+    post:
+      consumes:
+      - application/json
+      description: Добавление новой песни в библиотеку
+      operationId: post-song
+      parameters:
+      - description: Song Input
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.SongInput'
+      produces:
+      - application/json
+      responses: {}
+      summary: Add new song
+  /songs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет существующую песню по её ID.
+      operationId: delete-song
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete song
+    get:
+      consumes:
+      - application/json
+      description: Возвращает данные о песне по ее ID
+      operationId: get-song
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get song
+    put:
+      consumes:
+      - application/json
+      description: Изменяет данные о песни по её ID.
+      operationId: update-song
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные обновленной песни
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.Song'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update song
+  /songs/{id}/lyrics:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает текст куплета песни по номеру куплета.
+      operationId: get-song-lyrics
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Номер куплета (по умолчанию 1)
+        in: query
+        name: verse
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get song lyrics
+swagger: "2.0"

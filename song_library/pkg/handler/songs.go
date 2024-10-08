@@ -13,6 +13,17 @@ import (
 )
 
 // Метод для получения данных библиотеки с фильтрацией по всем полям и пагинацией
+// @Summary Get list of songs
+// @Description Возвращает список песен с возможностью фильтрации по группе, названию песни и дате релиза, поддерживает пагинацию.
+// @ID get-songs
+// @Accept  json
+// @Produce  json
+// @Param group query string false "Фильтрация по группе или исполнителю"
+// @Param song query string false "Фильтрация по названию песни"
+// @Param release_date query string false "Фильтрация по дате релиза"
+// @Param page query int false "Номер страницы для пагинации" default(1)
+// @Param limit query int false "Количество элементов на странице" default(10)
+// @Router /songs [get]
 func (h *Handler) get_songs(c *gin.Context) {
 	logrus.Infof("Handling get_songs request with params: group=%s, song=%s, release_date=%s, page=%s, limit=%s",
 		c.DefaultQuery("group", ""), c.DefaultQuery("song", ""), c.DefaultQuery("release_date", ""), c.DefaultQuery("page", "1"), c.DefaultQuery("limit", "10"))
@@ -48,6 +59,13 @@ func (h *Handler) get_songs(c *gin.Context) {
 }
 
 // Метод для добавления новой песни
+// @Summary Add new song
+// @Description Добавление новой песни в библиотеку
+// @ID post-song
+// @Accept  json
+// @Produce  json
+// @Param song body models.SongInput true "Song Input"
+// @Router /songs [post]
 func (h *Handler) post_song(c *gin.Context) {
 	logrus.Infof("Handling post_song request")
 
@@ -87,7 +105,7 @@ func (h *Handler) post_song(c *gin.Context) {
 	newSuccessResponse(c, http.StatusCreated, "message", "Song created")
 }
 
-// Middleware для извлечения ID и проверки существования персоны
+// Middleware для извлечения ID и проверки существования песни
 func (h *Handler) songMiddleware(c *gin.Context) {
 	idParam := c.Param("id")
 	logrus.Debugf("Extracted ID from request: %s", idParam)
@@ -120,6 +138,13 @@ func (h *Handler) songMiddleware(c *gin.Context) {
 }
 
 // Метод для получения данных песни
+// @Summary Get song
+// @Description Возвращает данные о песне по ее ID
+// @ID get-song
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Song ID"
+// @Router /songs/{id} [get]
 func (h *Handler) get_song(c *gin.Context) {
 	logrus.Infof("Handling get_song request")
 
@@ -135,6 +160,14 @@ func (h *Handler) get_song(c *gin.Context) {
 }
 
 // Метод для изменения данных песни
+// @Summary Update song
+// @Description Изменяет данные о песни по её ID.
+// @ID update-song
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Song ID"
+// @Param song body models.Song true "Данные обновленной песни"
+// @Router /songs/{id} [put]
 func (h *Handler) put_song(c *gin.Context) {
 	logrus.Infof("Handling put_song request")
 
@@ -168,6 +201,13 @@ func (h *Handler) put_song(c *gin.Context) {
 }
 
 // Метод для удаления песни
+// @Summary Delete song
+// @Description Удаляет существующую песню по её ID.
+// @ID delete-song
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Song ID"
+// @Router /songs/{id} [delete]
 func (h *Handler) delete_song(c *gin.Context) {
 	logrus.Infof("Handling delete_song request")
 
@@ -186,6 +226,14 @@ func (h *Handler) delete_song(c *gin.Context) {
 }
 
 // Метод для получения текста песни с пагинацией по куплетам
+// @Summary Get song lyrics
+// @Description Возвращает текст куплета песни по номеру куплета.
+// @ID get-song-lyrics
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Song ID"
+// @Param verse query int false "Номер куплета (по умолчанию 1)"
+// @Router /songs/{id}/lyrics [get]
 func (h *Handler) get_song_lyrics(c *gin.Context) {
 	logrus.Infof("Handling get_song_lyrics request")
 
