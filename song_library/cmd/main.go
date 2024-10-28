@@ -18,7 +18,10 @@ import (
 // @BasePath /
 
 func main() {
-	// logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetFormatter(&logrus.TextFormatter{
+		ForceColors:   true,
+		FullTimestamp: true,
+	})
 	logrus.SetLevel(logrus.DebugLevel)
 
 	if err := configs.LoadConfig(); err != nil {
