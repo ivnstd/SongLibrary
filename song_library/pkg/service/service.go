@@ -6,7 +6,7 @@ import (
 )
 
 type Songs interface {
-	GetSongs(group, song, releaseDate string, page, limit int) ([]models.Song, error)
+	GetSongs(artist, song, releaseDate string, page, limit int) ([]models.Song, error)
 	FetchSongDetail(group string, song string) (*models.SongDetail, error)
 	CreateSong(song models.Song) error
 	GetSong(id uint) (models.Song, error)

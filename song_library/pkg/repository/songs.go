@@ -14,14 +14,14 @@ func NewSongsDB(db *gorm.DB) *SongsDB {
 	return &SongsDB{db: db}
 }
 
-func (r *SongsDB) GetSongs(group, song, releaseDate string, page, limit int) ([]models.Song, error) {
+func (r *SongsDB) GetSongs(artist, song, releaseDate string, page, limit int) ([]models.Song, error) {
 	var songs []models.Song
 	query := r.db.Model(&models.Song{})
 
 	// Фильтрация по параметрам
-	if group != "" {
-		query = query.Where("\"group\" = ?", group)
-		logrus.Debugf("Applying filter: group = %s", group)
+	if artist != "" {
+		query = query.Where("artist = ?", artist)
+		logrus.Debugf("Applying filter: artist = %s", artist)
 	}
 	if song != "" {
 		query = query.Where("song = ?", song)

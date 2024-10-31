@@ -25,11 +25,11 @@ import (
 // @Param limit query int false "Количество элементов на странице" default(10)
 // @Router /songs [get]
 func (h *Handler) get_songs(c *gin.Context) {
-	logrus.Infof("Handling get_songs request with params: group=%s, song=%s, release_date=%s, page=%s, limit=%s",
-		c.DefaultQuery("group", ""), c.DefaultQuery("song", ""), c.DefaultQuery("release_date", ""), c.DefaultQuery("page", "1"), c.DefaultQuery("limit", "10"))
+	logrus.Infof("Handling get_songs request with params: artist=%s, song=%s, release_date=%s, page=%s, limit=%s",
+		c.DefaultQuery("artist", ""), c.DefaultQuery("song", ""), c.DefaultQuery("release_date", ""), c.DefaultQuery("page", "1"), c.DefaultQuery("limit", "10"))
 
 	// Извлечение параметров для фильтрации и пагинации
-	group := c.DefaultQuery("group", "")
+	artist := c.DefaultQuery("artist", "")
 	title := c.DefaultQuery("song", "")
 	releaseDate := c.DefaultQuery("release_date", "")
 
@@ -48,7 +48,7 @@ func (h *Handler) get_songs(c *gin.Context) {
 
 	// Получение данных о песнях из базы
 	logrus.Debug("Fetching songs")
-	songs, err := h.services.Songs.GetSongs(group, title, releaseDate, page, limit)
+	songs, err := h.services.Songs.GetSongs(artist, title, releaseDate, page, limit)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve songs", err.Error())
 		return
@@ -87,8 +87,8 @@ func (h *Handler) post_song(c *gin.Context) {
 
 	// Создание объекта песни с полученными данными
 	song := models.Song{
-		Group:       input.Group,
 		Song:        input.Song,
+		Artist:      input.Group,
 		ReleaseDate: songDetail.ReleaseDate,
 		Text:        songDetail.Text,
 		Link:        songDetail.Link,
