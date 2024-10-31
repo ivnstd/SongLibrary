@@ -7,7 +7,7 @@ func (Song) TableName() string {
 // @Description Песня в библиотеке
 type Song struct {
 	ID          uint   `json:"id"           gorm:"primaryKey;autoIncrement"` // ID песни
-	Song        string `json:"song"         gorm:"not null"`                 // Название песни
+	Title       string `json:"title"        gorm:"not null"`                 // Название песни
 	Artist      string `json:"artist"       gorm:"not null"`                 // Исполнитель
 	ReleaseDate string `json:"releaseDate"`                                  // Дата релиза
 	Text        string `json:"text"`                                         // Текст песни
