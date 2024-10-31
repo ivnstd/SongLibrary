@@ -8,7 +8,7 @@ import (
 
 var Config struct {
 	MainPort string
-	APIPort  string
+	API_URL  string
 
 	DB_Host     string
 	DB_Port     string
@@ -22,7 +22,7 @@ func LoadConfig() error {
 	err := godotenv.Load()
 
 	Config.MainPort = os.Getenv("SONGLIB_PORT")
-	Config.APIPort = os.Getenv("MUSINFO_PORT")
+	Config.API_URL = os.Getenv("MUSINFO_URL")
 
 	Config.DB_Host = os.Getenv("DB_HOST")
 	Config.DB_Port = os.Getenv("DB_PORT")

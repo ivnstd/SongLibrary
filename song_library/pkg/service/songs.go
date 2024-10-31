@@ -29,7 +29,7 @@ func (s *SongsService) FetchSongDetail(group string, song string) (*models.SongD
 	groupEscaped := url.QueryEscape(group)
 	songEscaped := url.QueryEscape(song)
 
-	url := fmt.Sprintf("http://localhost:%s/info?group=%s&song=%s", configs.Config.APIPort, groupEscaped, songEscaped)
+	url := fmt.Sprintf("%s/info?group=%s&song=%s", configs.Config.API_URL, groupEscaped, songEscaped)
 
 	logrus.Infof("Fetching details for song: %s by group: %s", song, group)
 	resp, err := http.Get(url)
