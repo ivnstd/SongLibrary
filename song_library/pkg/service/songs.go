@@ -34,18 +34,18 @@ func (s *SongsService) FetchSongDetail(group string, song string) (*models.SongD
 	logrus.Infof("Fetching details for song: %s by group: %s", song, group)
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to make request: %v", err)
+		return nil, fmt.Errorf("failed to make request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	logrus.Infof("Received response status: %d", resp.StatusCode)
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Unexpected status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	var songDetail models.SongDetail
 	if err := json.NewDecoder(resp.Body).Decode(&songDetail); err != nil {
-		return nil, fmt.Errorf("Failed to decode response: %v", err)
+		return nil, fmt.Errorf("failed to decode response: %v", err)
 	}
 
 	return &songDetail, nil
@@ -71,7 +71,7 @@ func (s *SongsService) GetSongLyrics(song models.Song, verseNumber int) (string,
 	verses := strings.Split(song.Text, "\n\n")
 
 	if verseNumber < 1 || verseNumber > len(verses) {
-		return "", fmt.Errorf("Verse not found")
+		return "", fmt.Errorf("verse not found")
 	}
 
 	return verses[verseNumber-1], nil
