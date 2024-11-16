@@ -21,8 +21,8 @@ func NewSongsService(repo repository.Songs) *SongsService {
 	return &SongsService{repo: repo}
 }
 
-func (s *SongsService) GetSongs(title, artist, releaseDate string, page, limit int) ([]models.Song, error) {
-	return s.repo.GetSongs(title, artist, releaseDate, page, limit)
+func (s *SongsService) GetSongs(title, artistName, releaseDate string, page, limit int) ([]models.Song, error) {
+	return s.repo.GetSongs(title, artistName, releaseDate, page, limit)
 }
 
 func (s *SongsService) FetchSongDetail(group string, song string) (*models.SongDetail, error) {

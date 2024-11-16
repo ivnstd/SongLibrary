@@ -1,17 +1,19 @@
 package models
 
 func (Song) TableName() string {
-	return "song"
+	return "songs"
 }
 
 // @Description Песня в библиотеке
 type Song struct {
 	ID          uint   `json:"id"           gorm:"primaryKey;autoIncrement"` // ID песни
 	Title       string `json:"title"        gorm:"not null"`                 // Название песни
-	Artist      string `json:"artist"       gorm:"not null"`                 // Исполнитель
+	ArtistID    uint   `json:"-"            gorm:"not null"`                 // ID исполнителя
+	ArtistName  string `json:"artist"`                                       // Наименование исполнителя
 	ReleaseDate string `json:"releaseDate"`                                  // Дата релиза
 	Text        string `json:"text"`                                         // Текст песни
 	Link        string `json:"link"`                                         // Ссылка на песню
+
 }
 
 // @Description Данные, необходимые для добавления новой песни

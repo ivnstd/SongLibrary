@@ -25,15 +25,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		songs.GET("", h.get_songs)  // Получение данных библиотеки с фильтрацией по всем полям и пагинацией
 		songs.POST("", h.post_song) // Добавление новой песни
 
-		songsByID := songs.Group("/:id")
-		{
-			songsByID.Use(h.songMiddleware)
+		// songsByID := songs.Group("/:id")
+		// {
+		// 	songsByID.Use(h.songMiddleware)
 
-			songsByID.GET("", h.get_song)               // Получение полной информации о песне
-			songsByID.PUT("", h.put_song)               // Изменение данных песни
-			songsByID.DELETE("", h.delete_song)         // Удаление песни
-			songsByID.GET("/lyrics", h.get_song_lyrics) // Получение текста песни с пагинацией по куплетам
-		}
+		// 	songsByID.GET("", h.get_song)               // Получение полной информации о песне
+		// 	songsByID.PUT("", h.put_song)               // Изменение данных песни
+		// 	songsByID.DELETE("", h.delete_song)         // Удаление песни
+		// 	songsByID.GET("/lyrics", h.get_song_lyrics) // Получение текста песни с пагинацией по куплетам
+		// }
 	}
 
 	return router

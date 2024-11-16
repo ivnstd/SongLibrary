@@ -14,18 +14,19 @@ func NewSongsDB(db *gorm.DB) *SongsDB {
 	return &SongsDB{db: db}
 }
 
-func (r *SongsDB) GetSongs(title, artist, releaseDate string, page, limit int) ([]models.Song, error) {
+func (r *SongsDB) GetSongs(title, artistName, releaseDate string, page, limit int) ([]models.Song, error) {
 	var songs []models.Song
-	query := r.db.Model(&models.Song{})
+	query := r.db.Model(&models.Song{}).Select("songs.*, artists.name AS artist_name").
+		Joins("JOIN artists ON artists.id = songs.artist_id")
 
 	// Фильтрация по параметрам
 	if title != "" {
 		query = query.Where("title = ?", title)
 		logrus.Debugf("Applying filter: title = %s", title)
 	}
-	if artist != "" {
-		query = query.Where("artist = ?", artist)
-		logrus.Debugf("Applying filter: artist = %s", artist)
+	if artistName != "" {
+		query = query.Where("artists.name = ?", artistName)
+		logrus.Debugf("Applying filter: artist = %s", artistName)
 	}
 	if releaseDate != "" {
 		query = query.Where("release_date = ?", releaseDate)
@@ -45,6 +46,20 @@ func (r *SongsDB) GetSongs(title, artist, releaseDate string, page, limit int) (
 }
 
 func (r *SongsDB) CreateSong(song models.Song) error {
+	// artist := models.Artist{
+	// 	Name: song.ArtistName,
+	// }
+
+	// if err := r.db.Model(&artist).First("name = ?", artist.Name); err != nil {
+	// 	err := r.db.Create(&artist).Error
+
+	// 	if err != nil {
+	// 		logrus.Errorf("Failed to execute query: %v", err)
+	// 		return err
+	// 	}
+	// }
+
+	// song.ArtistID = artist.ID
 	err := r.db.Create(&song).Error
 
 	if err != nil {
